@@ -229,21 +229,53 @@ if __name__ == "__main__":
     # except Exception as e:
     #     print(f"运行示例时发生错误: {e}")
     # 示例4：不同角动量的椭圆轨道
-    plt.figure(figsize=(10, 8))
-    for vy0 in [0.6, 0.8, 1.0]:
-        ic = [1.0, 0.0, 0.0, vy0]
-        sol = solve_orbit(ic, t_span, t_eval, GM)
-        L = calculate_angular_momentum(sol.y.T)
-        plt.plot(sol.y[0], sol.y[1], label=f'L={L[0]:.2f}')
+def find_initial_conditions(E, L, GM=1.0, r0=1.0):
+    """
+    根据给定的E和L计算合适的初始条件
+    返回 [x0, y0, vx0, vy0]
+    """
+    # 从能量方程 E = 0.5*v^2 - GM/r 解出v大小
+    v_magnitude = np.sqrt(2*(E + GM/r0))
     
-    plt.plot(0, 0, 'ko', markersize=10, label='Center Mass')
-    plt.title('Elliptic Orbits with Different Angular Momenta')
-    plt.xlabel('x')
-    plt.ylabel('y')
-    plt.legend()
-    plt.grid(True)
-    plt.axis('equal')
-    plt.show()
+    # 从角动量 L = r × v 解出切向速度分量
+    # 选择初始位置在x轴上 (y0=0)，所以 L = x0*vy - y0*vx = r0*vy
+    vy = L / r0
+    
+    # 径向速度分量由 v^2 = vx^2 + vy^2 决定
+    if v_magnitude**2 >= vy**2:
+        vx = np.sqrt(v_magnitude**2 - vy**2)
+    else:
+        raise ValueError("给定的E和L组合不满足 v^2 >= (L/r)^2")
+    
+    return [r0, 0.0, vx, vy]
+
+# 示例：固定E=-0.5，改变L值
+E_fixed = -0.5  # 固定能量值
+GM = 1.0
+t_span = (0, 20)
+t_eval = np.linspace(0, 20, 500)
+
+plt.figure(figsize=(10, 8))
+for L in [0.5, 0.7, 0.9]:  # 不同角动量
+    try:
+        ic = find_initial_conditions(E_fixed, L, GM)
+        sol = solve_orbit(ic, t_span, t_eval, GM)
+        actual_E = calculate_energy(sol.y.T, GM)[0]
+        actual_L = calculate_angular_momentum(sol.y.T)[0]
+        
+        plt.plot(sol.y[0], sol.y[1], 
+                label=f'L={L:.1f} (实际E={actual_E:.3f}, L={actual_L:.3f})')
+    except ValueError as e:
+        print(f"L={L}时出错:", e)
+
+plt.plot(0, 0, 'ko', markersize=10, label='中心天体')
+plt.title(f'固定能量E={E_fixed}时的不同角动量轨道')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.legend()
+plt.grid(True)
+plt.axis('equal')
+plt.show()
     # 学生需要根据“项目说明.md”完成以下任务：
     # 1. 实现 `derivatives`, `solve_orbit`, `calculate_energy`, `calculate_angular_momentum` 函数。
     # 2. 针对 E > 0, E = 0, E < 0 三种情况设置初始条件，求解并绘制轨道。
