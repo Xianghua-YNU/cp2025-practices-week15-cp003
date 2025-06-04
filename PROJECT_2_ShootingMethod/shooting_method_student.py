@@ -23,25 +23,26 @@ warnings.filterwarnings('ignore')
 def ode_system_shooting(t, y):
     """
     Define the ODE system for shooting method.
-
+    
     Convert the second-order ODE u'' = -π(u+1)/4 into a first-order system:
     y1 = u, y2 = u'
     y1' = y2
     y2' = -π(y1+1)/4
-
+    
     Args:
         t (float): Independent variable (time/position)
         y (array): State vector [y1, y2] where y1=u, y2=u'
-
+    
     Returns:
         list: Derivatives [y1', y2']
-
+    
     TODO: Implement the ODE system conversion
     Hint: Return [y[1], -np.pi*(y[0]+1)/4]
     """
-    # Ensure y is treated as an array
+    # Ensure y is treated as an array with at least two elements
     y = np.atleast_1d(y)
-    
+    if len(y) < 2:
+        y = np.pad(y, (0, 2 - len(y)), mode='constant')
     return [y[1], -np.pi * (y[0] + 1) / 4]
 
 
@@ -62,9 +63,8 @@ def boundary_conditions_scipy(ya, yb):
     TODO: Implement boundary conditions
     Hint: Return np.array([ya[0] - 1, yb[0] - 1])
     """
-    # TODO: Implement boundary conditions for scipy.solve_bvp
-    # [STUDENT_CODE_HERE]
     return np.array([ya[0] - 1, yb[0] - 1])
+
 
 def ode_system_scipy(x, y):
     """
@@ -82,9 +82,8 @@ def ode_system_scipy(x, y):
     TODO: Implement ODE system for scipy.solve_bvp
     Hint: Use np.vstack to return column vector
     """
-    # TODO: Implement ODE system for scipy.solve_bvp
-    # [STUDENT_CODE_HERE]
-    return np.vstack((y[1], -np.pi*(y[0]+1)/4))
+    return np.vstack((y[1], -np.pi * (y[0] + 1) / 4))
+
 
 def solve_bvp_shooting_method(x_span, boundary_conditions, n_points=100, max_iterations=10, tolerance=1e-6):
     """
@@ -172,6 +171,7 @@ def solve_bvp_shooting_method(x_span, boundary_conditions, n_points=100, max_ite
     print(f"Final boundary error: {abs(u_end_3 - u_right):.2e}")
     return x, sol3[:, 0]
 
+
 def solve_bvp_scipy_wrapper(x_span, boundary_conditions, n_points=50):
     """
     Solve boundary value problem using scipy.solve_bvp.
@@ -221,6 +221,7 @@ def solve_bvp_scipy_wrapper(x_span, boundary_conditions, n_points=50):
         
     except Exception as e:
         raise RuntimeError(f"Error in scipy.solve_bvp: {str(e)}")
+
 
 def compare_methods_and_plot(x_span=(0, 1), boundary_conditions=(1, 1), n_points=100):
     """
@@ -314,6 +315,7 @@ def compare_methods_and_plot(x_span=(0, 1), boundary_conditions=(1, 1), n_points
         print(f"Error in method comparison: {str(e)}")
         raise
 
+
 # Test functions for development and debugging
 def test_ode_system():
     """
@@ -359,6 +361,7 @@ def test_boundary_conditions():
     
     print("Boundary conditions test passed!")
 
+
 def test_shooting_method():
     """
     Test the shooting method implementation.
@@ -376,6 +379,7 @@ def test_shooting_method():
     
     print(f"Shooting method: u(0) = {y[0]:.6f}, u(1) = {y[-1]:.6f}")
     print("Shooting method test passed!")
+
 
 def test_scipy_method():
     """
