@@ -12,19 +12,6 @@ u''(x) = -π(u(x)+1)/4
 完成日期：[2025.6.4]
 """
 
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-项目2：打靶法与scipy.solve_bvp求解边值问题 - 参考答案
-
-本项目实现打靶法和scipy.solve_bvp两种方法来求解二阶线性常微分方程边值问题：
-u''(x) = -π(u(x)+1)/4
-边界条件：u(0) = 1, u(1) = 1
-
-作者：教学团队
-创建日期：2024
-"""
-
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.integrate import odeint, solve_ivp, solve_bvp
