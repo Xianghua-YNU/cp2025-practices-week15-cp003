@@ -12,6 +12,19 @@ u''(x) = -π(u(x)+1)/4
 完成日期：[2025.6.4]
 """
 
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+项目2：打靶法与scipy.solve_bvp求解边值问题 - 参考答案
+
+本项目实现打靶法和scipy.solve_bvp两种方法来求解二阶线性常微分方程边值问题：
+u''(x) = -π(u(x)+1)/4
+边界条件：u(0) = 1, u(1) = 1
+
+作者：教学团队
+创建日期：2024
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.integrate import odeint, solve_ivp, solve_bvp
@@ -35,15 +48,8 @@ def ode_system_shooting(t, y):
     
     Returns:
         list: Derivatives [y1', y2']
-    
-    TODO: Implement the ODE system conversion
-    Hint: Return [y[1], -np.pi*(y[0]+1)/4]
     """
-    y = np.atleast_1d(y)
-    if len(y) < 2:
-        y = np.append(y, 0.0)  # Append a zero if y has only one element
-    
-    return [y[1], -np.pi * (y[0] + 1) / 4]
+    return [y[1], -np.pi*(y[0]+1)/4]
 
 
 def boundary_conditions_scipy(ya, yb):
@@ -59,9 +65,6 @@ def boundary_conditions_scipy(ya, yb):
     
     Returns:
         array: Boundary condition residuals
-    
-    TODO: Implement boundary conditions
-    Hint: Return np.array([ya[0] - 1, yb[0] - 1])
     """
     return np.array([ya[0] - 1, yb[0] - 1])
 
@@ -78,11 +81,8 @@ def ode_system_scipy(x, y):
     
     Returns:
         array: Derivatives as column vector
-    
-    TODO: Implement ODE system for scipy.solve_bvp
-    Hint: Use np.vstack to return column vector
     """
-    return np.vstack((y[1], -np.pi * (y[0] + 1) / 4))
+    return np.vstack((y[1], -np.pi*(y[0]+1)/4))
 
 
 def solve_bvp_shooting_method(x_span, boundary_conditions, n_points=100, max_iterations=10, tolerance=1e-6):
@@ -104,9 +104,6 @@ def solve_bvp_shooting_method(x_span, boundary_conditions, n_points=100, max_ite
     
     Returns:
         tuple: (x_array, y_array) solution arrays
-    
-    TODO: Implement shooting method algorithm
-    Hint: Use secant method to adjust initial slope
     """
     # Validate input parameters
     if len(x_span) != 2 or x_span[1] <= x_span[0]:
@@ -124,7 +121,7 @@ def solve_bvp_shooting_method(x_span, boundary_conditions, n_points=100, max_ite
     
     # Initial guess for slope
     m1 = -1.0  # First guess
-    y0 = np.array([u_left, m1], dtype=np.float64)  # Initial conditions [u(0), u'(0)]
+    y0 = [u_left, m1]  # Initial conditions [u(0), u'(0)]
     
     # Solve with first guess
     sol1 = odeint(ode_system_shooting, y0, x)
@@ -183,9 +180,6 @@ def solve_bvp_scipy_wrapper(x_span, boundary_conditions, n_points=50):
     
     Returns:
         tuple: (x_array, y_array) solution arrays
-    
-    TODO: Implement scipy.solve_bvp wrapper
-    Hint: Set up initial guess and call solve_bvp
     """
     # Validate input parameters
     if len(x_span) != 2 or x_span[1] <= x_span[0]:
@@ -234,9 +228,6 @@ def compare_methods_and_plot(x_span=(0, 1), boundary_conditions=(1, 1), n_points
     
     Returns:
         dict: Dictionary containing solutions and analysis
-    
-    TODO: Implement method comparison and visualization
-    Hint: Call both methods, plot results, calculate differences
     """
     print("Solving BVP using both methods...")
     
@@ -401,19 +392,19 @@ def test_scipy_method():
 
 
 if __name__ == "__main__":
-    print("项目2：打靶法与scipy.solve_bvp求解边值问题")
-    print("=" * 50)
+    print("项目2：打靶法与scipy.solve_bvp求解边值问题 - 参考答案")
+    print("=" * 60)
     
-    # Run basic tests
+    # Run all tests
+    print("Running unit tests...")
     test_ode_system()
     test_boundary_conditions()
+    test_shooting_method()
+    test_scipy_method()
+    print("All unit tests passed!\n")
     
-    # Try to run comparison (will fail until functions are implemented)
-    try:
-        print("\nTesting method comparison...")
-        results = compare_methods_and_plot()
-        print("Method comparison completed successfully!")
-    except NotImplementedError as e:
-        print(f"Method comparison not yet implemented: {e}")
+    # Run method comparison
+    print("Running method comparison...")
+    results = compare_methods_and_plot()
     
     print("\n请实现所有标记为 TODO 的函数以完成项目。")
