@@ -40,7 +40,7 @@ def ode_system_shooting(t, y):
     Hint: Return [y[1], -np.pi*(y[0]+1)/4]
     """
     y = np.atleast_1d(y)
-    if len(y) == 1:
+    if len(y) < 2:
         y = np.append(y, 0.0)  # Append a zero if y has only one element
     
     return [y[1], -np.pi * (y[0] + 1) / 4]
@@ -124,7 +124,7 @@ def solve_bvp_shooting_method(x_span, boundary_conditions, n_points=100, max_ite
     
     # Initial guess for slope
     m1 = -1.0  # First guess
-    y0 = [u_left, m1]  # Initial conditions [u(0), u'(0)]
+    y0 = np.array([u_left, m1], dtype=np.float64)  # Initial conditions [u(0), u'(0)]
     
     # Solve with first guess
     sol1 = odeint(ode_system_shooting, y0, x)
