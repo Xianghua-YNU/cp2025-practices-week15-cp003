@@ -171,7 +171,6 @@ def solve_bvp_shooting_method(x_span, boundary_conditions, n_points=100, max_ite
     print(f"Final boundary error: {abs(u_end_3 - u_right):.2e}")
     return x, sol3[:, 0]
 
-
 def solve_bvp_scipy_wrapper(x_span, boundary_conditions, n_points=50):
     """
     Solve boundary value problem using scipy.solve_bvp.
@@ -320,21 +319,26 @@ def test_ode_system():
     Test the ODE system implementation.
     """
     print("Testing ODE system...")
-    try:
-        # Test point
-        t_test = 0.5
-        y_test = np.array([1.0, 0.5])
-        
-        # Test shooting method ODE system
-        dydt = ode_system_shooting(t_test, y_test)
-        print(f"ODE system (shooting): dydt = {dydt}")
-        
-        # Test scipy ODE system
-        dydt_scipy = ode_system_scipy(t_test, y_test)
-        print(f"ODE system (scipy): dydt = {dydt_scipy}")
-        
-    except NotImplementedError:
-        print("ODE system functions not yet implemented.")
+    
+    # Test point
+    t_test = 0.5
+    y_test = np.array([1.0, 0.5])
+    
+    # Test shooting method ODE system
+    dydt = ode_system_shooting(t_test, y_test)
+    expected = [0.5, -np.pi*(1.0+1)/4]
+    print(f"ODE system (shooting): dydt = {dydt}")
+    print(f"Expected: {expected}")
+    assert np.allclose(dydt, expected), "Shooting ODE system test failed"
+    
+    # Test scipy ODE system
+    dydt_scipy = ode_system_scipy(t_test, y_test)
+    expected_scipy = np.array([[0.5], [-np.pi*2/4]])
+    print(f"ODE system (scipy): dydt = {dydt_scipy.flatten()}")
+    print(f"Expected: {expected_scipy.flatten()}")
+    assert np.allclose(dydt_scipy, expected_scipy), "Scipy ODE system test failed"
+    
+    print("ODE system tests passed!")
 
 
 def test_boundary_conditions():
@@ -342,15 +346,53 @@ def test_boundary_conditions():
     Test the boundary conditions implementation.
     """
     print("Testing boundary conditions...")
-    try:
-        ya = np.array([1.0, 0.5])  # Left boundary
-        yb = np.array([1.0, -0.3])  # Right boundary
-        
-        bc_residual = boundary_conditions_scipy(ya, yb)
-        print(f"Boundary condition residuals: {bc_residual}")
-        
-    except NotImplementedError:
-        print("Boundary conditions function not yet implemented.")
+    
+    ya = np.array([1.0, 0.5])  # Left boundary
+    yb = np.array([1.0, -0.3])  # Right boundary
+    
+    bc_residual = boundary_conditions_scipy(ya, yb)
+    expected = np.array([0.0, 0.0])  # Both boundaries should be satisfied
+    print(f"Boundary condition residuals: {bc_residual}")
+    print(f"Expected: {expected}")
+    assert np.allclose(bc_residual, expected), "Boundary conditions test failed"
+    
+    print("Boundary conditions test passed!")
+
+def test_shooting_method():
+    """
+    Test the shooting method implementation.
+    """
+    print("Testing shooting method...")
+    
+    x_span = (0, 1)
+    boundary_conditions = (1, 1)
+    
+    x, y = solve_bvp_shooting_method(x_span, boundary_conditions, n_points=50)
+    
+    # Check boundary conditions
+    assert abs(y[0] - boundary_conditions[0]) < 1e-6, "Left boundary condition not satisfied"
+    assert abs(y[-1] - boundary_conditions[1]) < 1e-6, "Right boundary condition not satisfied"
+    
+    print(f"Shooting method: u(0) = {y[0]:.6f}, u(1) = {y[-1]:.6f}")
+    print("Shooting method test passed!")
+
+def test_scipy_method():
+    """
+    Test the scipy.solve_bvp wrapper.
+    """
+    print("Testing scipy.solve_bvp wrapper...")
+    
+    x_span = (0, 1)
+    boundary_conditions = (1, 1)
+    
+    x, y = solve_bvp_scipy_wrapper(x_span, boundary_conditions, n_points=20)
+    
+    # Check boundary conditions
+    assert abs(y[0] - boundary_conditions[0]) < 1e-6, "Left boundary condition not satisfied"
+    assert abs(y[-1] - boundary_conditions[1]) < 1e-6, "Right boundary condition not satisfied"
+    
+    print(f"scipy.solve_bvp: u(0) = {y[0]:.6f}, u(1) = {y[-1]:.6f}")
+    print("scipy.solve_bvp wrapper test passed!")
 
 
 if __name__ == "__main__":
