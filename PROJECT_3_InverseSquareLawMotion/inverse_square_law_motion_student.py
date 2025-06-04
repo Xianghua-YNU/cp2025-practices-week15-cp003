@@ -285,4 +285,4 @@ plt.show()
     #print("\n请参照 '项目说明.md' 完成各项任务。")
     #print("使用 'tests/test_inverse_square_law_motion.py' 文件来测试你的代码实现。")
 
-    pass # 学生代码的主要部分应在函数内实现
+
