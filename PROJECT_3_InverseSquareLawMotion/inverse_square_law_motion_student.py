@@ -120,7 +120,7 @@ def calculate_energy(state_vector, gm_val, m=1.0):
         kinetic = 0.5 * v_squared
         potential = -gm_val / r if r > 1e-10 else -np.inf
         return (kinetic + potential) * m
-     else:
+    else:
         x = state_vector[:, 0]
         y = state_vector[:, 1]
         vx = state_vector[:, 2]
