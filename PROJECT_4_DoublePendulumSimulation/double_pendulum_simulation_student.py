@@ -1,8 +1,3 @@
-"""
-模块：双摆模拟解决方案
-作者：由Trae助手生成
-描述：完整的双摆动力学模拟解决方案，包括能量计算和可选动画功能
-"""
 
 import numpy as np
 import matplotlib.pyplot as plt
