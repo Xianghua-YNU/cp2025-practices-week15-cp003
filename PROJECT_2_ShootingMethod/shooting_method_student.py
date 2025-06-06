@@ -39,7 +39,6 @@ def ode_system_shooting(t, y):
     TODO: Implement the ODE system conversion
     Hint: Return [y[1], -np.pi*(y[0]+1)/4]
     """
-    # Ensure y is treated as an array with at least two elements
     y = np.atleast_1d(y)
     if len(y) < 2:
         y = np.pad(y, (0, 2 - len(y)), mode='constant')
